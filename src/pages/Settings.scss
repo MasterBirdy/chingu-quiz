@@ -1,0 +1,23 @@
+.subheading {
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.125rem;
+    border-bottom: 1px solid #ccc;
+}
+
+.list {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    li {
+        list-style: none;
+    }
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    input {
+        margin-left: 0.25rem;
+        cursor: pointer;
+    }
+}

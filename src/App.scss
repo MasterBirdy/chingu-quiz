@@ -1,0 +1,21 @@
+.container {
+    margin: 0 auto;
+    padding: 0 2rem;
+    max-width: 70rem;
+
+    @media only screen and (max-width: 600px) {
+        padding: 0;
+        width: 92.5%;
+    }
+
+    @media only screen and (max-width: 768px) {
+        padding: 0;
+        width: 90%;
+    }
+}
+
+.header {
+    margin: 1rem 0 2rem;
+    font-size: 3rem;
+    text-align: center;
+}

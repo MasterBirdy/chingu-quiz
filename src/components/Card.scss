@@ -1,0 +1,58 @@
+.card {
+    max-width: 550px;
+    border: 1px solid rgb(226, 226, 226);
+    border-radius: 5px;
+    padding: 2rem 3rem;
+    box-shadow: 9px 11px 11px -13px rgba(115, 115, 115, 0.5);
+    flex: 1;
+
+    .card-header {
+        margin-bottom: 0.75rem;
+        text-align: center;
+    }
+
+    .card-line {
+        margin-bottom: 0.75rem;
+    }
+
+    .answers {
+        margin: 1rem 0 0.75rem;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-row-gap: 0.75rem;
+
+        .answer {
+            border: 1px solid #999;
+            border-radius: 5px;
+            padding: 1rem;
+            width: 100%;
+            max-width: 200px;
+            justify-self: center;
+            &.not-answered {
+                cursor: pointer;
+                &:hover {
+                    transition: background-color 0.25s ease-out;
+                    background-color: #ccc;
+                }
+            }
+
+            &.right {
+                border-color: green;
+                background-color: rgb(120, 216, 120);
+            }
+
+            &.wrong {
+                border-color: rgb(136, 14, 14);
+                background-color: rgb(230, 150, 150);
+            }
+        }
+    }
+
+    @media only screen and (max-width: 600px) {
+        padding: 1rem 2rem;
+    }
+}
+
+.center {
+    text-align: center;
+}

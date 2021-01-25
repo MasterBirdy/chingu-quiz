@@ -1,26 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.scss";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Home from "./pages/Home";
+import Settings from "./pages/Settings";
+import NavBar from "./components/NavBar";
+import { QuizProvider } from "./context/QuizContext";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <div className="container">
+            <Router>
+                <QuizProvider>
+                    <NavBar />
+                    <h1 className="header">Chingu Quiz</h1>
+                    <Switch>
+                        <Route path="/" exact component={Home} />
+                        <Route path="/settings" exact component={Settings} />
+                    </Switch>
+                </QuizProvider>
+            </Router>
+        </div>
+    );
 }
 
 export default App;
