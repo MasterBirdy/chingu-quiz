@@ -7,7 +7,7 @@ import "./Settings.scss";
 export interface SettingsProps {}
 
 const Settings: React.FC<SettingsProps> = () => {
-    const { topics, checkTopic } = useContext(QuizContext) || {};
+    const { topics, checkTopic, QUESTION_MIN, QUESTION_MAX, changeQuestionRange, questionsLength } = useContext(QuizContext) || {};
     return (
         <div className="page">
             <Card>
@@ -33,6 +33,21 @@ const Settings: React.FC<SettingsProps> = () => {
                         ))}
                     </ul>
                 )}
+                <h3 className="subheading">Number of Questions</h3>
+                <label htmlFor="questions">
+                    <input
+                        type="number"
+                        id="questions"
+                        name="questions"
+                        className="questions"
+                        min={QUESTION_MIN}
+                        max={QUESTION_MAX}
+                        value={questionsLength}
+                        onChange={(e) => {
+                            changeQuestionRange!(parseInt(e.target.value));
+                        }}
+                    />
+                </label>
             </Card>
         </div>
     );

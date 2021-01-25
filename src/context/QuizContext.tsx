@@ -18,6 +18,10 @@ export enum Answer {
     "d",
 }
 
+/**
+ * Allows objects to have dynamic keys.
+ */
+
 export interface LooseObject {
     [key: string]: any;
 }
@@ -42,12 +46,18 @@ export interface QuizContextInterface {
     topics: Selection[];
     questionCounter: number;
     yourQuestions: number[];
+    answersCorrect: number;
     yourAnswers: Array<keyof typeof Answer>;
     errorMessage: string;
+    questionsLength: number;
     checkTopic: (t: Topic) => void;
     startGame: () => void;
     answerQuestion: (a: keyof typeof Answer) => void;
     nextQuestion: () => void;
+    resetGame: () => void;
+    changeQuestionRange: (n: number) => void;
+    QUESTION_MIN: number;
+    QUESTION_MAX: number;
 }
 
 interface Selection {
@@ -56,11 +66,19 @@ interface Selection {
     checked: boolean;
 }
 
+/**
+ * Statically creates possible selection options for quiz.
+ */
+
 const selections: Selection[] = [
     { name: "HTML", topic: Topic.html, checked: true },
     { name: "CSS", topic: Topic.css, checked: true },
     { name: "JavaScript", topic: Topic.javascript, checked: true },
 ];
+
+const QUESTION_MIN = 3;
+const QUESTION_START = 5;
+const QUESTION_MAX = 10;
 
 export const QuizContext = createContext<QuizContextInterface | null>(null);
 
@@ -75,7 +93,12 @@ export const QuizProvider = ({ children }: QuizProviderInterface) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [yourQuestions, setYourQuestions] = useState<number[]>([]);
     const [yourAnswers, setYourAnswers] = useState<Array<keyof typeof Answer>>([]);
-    const [questionsLength, setQuestionsLength] = useState(5);
+    const [questionsLength, setQuestionsLength] = useState(QUESTION_START);
+    const [answersCorrect, setAnswersCorrect] = useState(0);
+
+    /**
+     * Loads initial question data from json file.
+     */
 
     useEffect(() => {
         axios
@@ -83,13 +106,18 @@ export const QuizProvider = ({ children }: QuizProviderInterface) => {
             .then((res) => {
                 setQuestions(res.data);
             })
-            .catch((err) => console.log(err))
+            .catch((err) => setErrorMessage(err))
             .finally(() => {
                 setNotLoading(true);
             });
     }, []);
 
+    /**
+     * Finds topic that matches checked event, and then checks/unchecks topic accordingly.
+     */
+
     const checkTopic = (topic: Topic) => {
+        setErrorMessage("");
         setTopics((prevTopics) => {
             const copy = [...prevTopics];
             for (let i = 0; i < copy.length; i++) {
@@ -102,10 +130,25 @@ export const QuizProvider = ({ children }: QuizProviderInterface) => {
         });
     };
 
+    /**
+     * Starts game and selects questions to be asked based on filter and question length.
+     */
+
     const startGame = () => {
-        setGameStarted(true);
-        setYourQuestions(fillQuestions());
+        const error = validate();
+        if (!error) {
+            setGameStarted(true);
+            setYourQuestions(fillQuestions());
+            setErrorMessage("");
+        } else {
+            setErrorMessage(error);
+        }
     };
+
+    /**
+     * Filters questions based on topic, then randomly selects from a set until either question length has been filled
+     * or all possible filtered questions have been used.
+     */
 
     const fillQuestions = () => {
         const filteredQuestions = questions
@@ -127,18 +170,86 @@ export const QuizProvider = ({ children }: QuizProviderInterface) => {
         return currentQuestions;
     };
 
+    /**
+     * Adds question to answers if current question has no answer yet.
+     * @param answer Selection of a, b, c, or d
+     */
+
     const answerQuestion = (answer: keyof typeof Answer) => {
         if (yourAnswers.length === questionCounter) {
+            if (answer === questions[yourQuestions[questionCounter]].answer) {
+                setAnswersCorrect((prev) => ++prev);
+            }
             setYourAnswers((prev) => [...prev, answer]);
         }
     };
 
+    /**
+     * Increases question counter by one to go to next question.
+     */
+
     const nextQuestion = () => {
-        setQuestionCounter((prev) => prev + 1);
+        setQuestionCounter((prev) => ++prev);
+    };
+
+    /**
+     * Resets all variables used to keep track of game and questions.
+     */
+
+    const resetGame = () => {
+        setGameStarted(false);
+        setQuestionCounter(0);
+        setYourQuestions([]);
+        setYourAnswers([]);
+        setAnswersCorrect(0);
+    };
+
+    /**
+     *  Checks to make sure there are no validation errors.
+     */
+    const validate = () => {
+        if (!topics.some((topic) => topic.checked)) {
+            return "There must be at least one chosen topic!";
+        }
+        if (!(QUESTION_MIN <= questionsLength && questionsLength <= QUESTION_MAX)) {
+            return `Number of questions must be above ${QUESTION_MIN} and below ${QUESTION_MAX}!`;
+        }
+        return null;
+    };
+
+    /**
+     * Changes questions length.
+     * @param n Number to set Questions Length to.
+     */
+
+    const changeQuestionRange = (n: number) => {
+        setErrorMessage("");
+        setQuestionsLength(n);
     };
 
     return (
-        <QuizContext.Provider value={{ notLoading, nextQuestion, errorMessage, yourQuestions, yourAnswers, answerQuestion, questionCounter, startGame, gameStarted, questions, topics, checkTopic }}>
+        <QuizContext.Provider
+            value={{
+                notLoading,
+                resetGame,
+                answersCorrect,
+                nextQuestion,
+                errorMessage,
+                yourQuestions,
+                yourAnswers,
+                answerQuestion,
+                questionCounter,
+                startGame,
+                gameStarted,
+                questions,
+                topics,
+                checkTopic,
+                QUESTION_MAX,
+                QUESTION_MIN,
+                changeQuestionRange,
+                questionsLength,
+            }}
+        >
             {children}
         </QuizContext.Provider>
     );

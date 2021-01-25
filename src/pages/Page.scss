@@ -1,4 +1,12 @@
 .page {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 1rem;
+}
+
+.error {
+    margin-top: 0.5rem;
+    color: rgb(173, 36, 36);
+    font-weight: 700;
 }

@@ -7,7 +7,8 @@ import "./Page.scss";
 export interface HomeProps {}
 
 const Home: React.FC<HomeProps> = () => {
-    const { notLoading, gameStarted, startGame, questionCounter, questions, yourQuestions, yourAnswers, answerQuestion, nextQuestion } = useContext(QuizContext) || {};
+    const { notLoading, gameStarted, startGame, resetGame, errorMessage, questionCounter, questions, yourQuestions, yourAnswers, answerQuestion, nextQuestion, answersCorrect } =
+        useContext(QuizContext) || {};
     if (!notLoading) {
         return (
             <div className="page center">
@@ -21,6 +22,11 @@ const Home: React.FC<HomeProps> = () => {
                 questionCounter! >= yourQuestions!.length ? (
                     <Card>
                         <h2 className="card-header">Quiz Completed!</h2>
+                        <p className="card-line">
+                            You got {answersCorrect} out of {yourAnswers!.length} correct!{" "}
+                            {answersCorrect! / yourAnswers!.length === 1 ? "Perfect!" : answersCorrect! / yourAnswers!.length >= 0.5 ? "Not bad!" : "Try again!"}
+                        </p>
+                        <Button clickHandler={resetGame}>End</Button>
                     </Card>
                 ) : (
                     <Card>
@@ -28,7 +34,6 @@ const Home: React.FC<HomeProps> = () => {
                         <p className="card-line">{questions![yourQuestions![questionCounter!]].question}</p>
                         <div className="answers">
                             {(Object.keys(questions![yourQuestions![questionCounter!]].choices) as Array<keyof typeof Answer>).map((choice) => {
-                                console.log(yourAnswers!.length > questionCounter!, questions![yourQuestions![questionCounter!]].answer === choice);
                                 return (
                                     <div
                                         key={choice}
@@ -65,6 +70,7 @@ const Home: React.FC<HomeProps> = () => {
                     <Button clickHandler={startGame}>Start</Button>
                 </Card>
             )}
+            {errorMessage && <p className="error">{errorMessage}</p>}
         </div>
     );
 };
