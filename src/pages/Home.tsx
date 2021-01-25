@@ -7,7 +7,7 @@ import "./Page.scss";
 export interface HomeProps {}
 
 const Home: React.FC<HomeProps> = () => {
-    const { notLoading, gameStarted, startGame, resetGame, errorMessage, questionCounter, questions, yourQuestions, yourAnswers, answerQuestion, nextQuestion, answersCorrect } =
+    const { notLoading, gameStarted, startGame, resetGame, errorMessage, questionCounter, questionsLength, questions, yourQuestions, yourAnswers, answerQuestion, nextQuestion, answersCorrect } =
         useContext(QuizContext) || {};
     if (!notLoading) {
         return (
@@ -30,7 +30,9 @@ const Home: React.FC<HomeProps> = () => {
                     </Card>
                 ) : (
                     <Card>
-                        <h2 className="card-header">Question {questionCounter! + 1}</h2>
+                        <h2 className="card-header">
+                            Question {questionCounter! + 1} / {questionsLength}
+                        </h2>
                         <p className="card-line">{questions![yourQuestions![questionCounter!]].question}</p>
                         <div className="answers">
                             {(Object.keys(questions![yourQuestions![questionCounter!]].choices) as Array<keyof typeof Answer>).map((choice) => {
